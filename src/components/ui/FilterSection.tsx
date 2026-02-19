@@ -46,7 +46,7 @@ export default function FilterSection({
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: "#0a0e27",
+    backgroundColor: "#0A1024",
     borderBottomWidth: 1,
     borderBottomColor: "#1e293b",
   },

@@ -59,16 +59,17 @@ export default function Home() {
                     />
                 }
                 renderItem={({ item }) => (
-                    <AsteroidCard
-                        name={item.name}
-                        diameterMin={item.diameterMin}
-                        diameterMax={item.diameterMax}
-                        distance={item.distance}
-                        velocity={item.velocity}
-                        isPotentiallyHazardous={item.hazardous}
-                    />
+                    <View style={styles.cardWrapper}>
+                        <AsteroidCard
+                            name={item.name}
+                            diameterMin={item.diameterMin}
+                            diameterMax={item.diameterMax}
+                            distance={item.distance}
+                            velocity={item.velocity}
+                            isPotentiallyHazardous={item.hazardous}
+                        />
+                    </View>
                 )}
-                contentContainerStyle={styles.listContent}
             />
         </View>
     )
@@ -77,7 +78,7 @@ export default function Home() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#0a0e27",
+        backgroundColor: "#020618",
     },
     loading: {
         color: "#e2e8f0",
@@ -85,7 +86,8 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
     },
-    listContent: {
+    cardWrapper: {
         paddingHorizontal: 16,
+        paddingTop: 4,
     },
 });

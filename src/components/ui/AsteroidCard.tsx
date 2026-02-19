@@ -61,15 +61,17 @@ const styles = StyleSheet.create({
     card: {
         padding: 16,
         marginBottom: 12,
-        borderRadius: 8,
-        borderLeftWidth: 4,
-        backgroundColor: "#0a0e27",
+        borderRadius: 16,
+        borderLeftWidth: 6,
+        backgroundColor: "#070D20",
     },
     hazardous: {
         borderLeftColor: '#ef4444',
+        backgroundColor: "#100918",
     },
     safe: {
         borderLeftColor: '#3b82f6',
+        backgroundColor: "#070D20",
     },
     header: {
         flexDirection: 'row',
