@@ -1,11 +1,12 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, SectionList, StyleSheet, Text, View } from "react-native";
 import { useAsteroids } from "../../hooks/useAsteroids";
 import { asteroidListAtom, loadingAtom } from "../../store/asteroid.atoms";
 import AsteroidCard from "../ui/AsteroidCard";
 import FilterSection from "../ui/FilterSection";
 import Header from "../ui/Header";
+import { formatDateLabel } from "../../utils/formatDate";
 
 export default function Home() {
     const { load } = useAsteroids();
@@ -15,24 +16,49 @@ export default function Home() {
     const [sortBy, setSortBy] = useState("date");
 
     useEffect(() => {
-        load("2024-01-01", "2024-01-08");
+        load("2026-02-19", "2026-02-26");
     }, []);
 
-    const filteredAndSorted = useMemo(() => {
+    const { sections, isGrouped } = useMemo(() => {
         let result = [...asteroids];
         
         if (onlyHazardous) {
             result = result.filter(a => a.hazardous);
         }
         
-        result.sort((a, b) => {
-            if (sortBy === "distance") return a.distance - b.distance;
-            if (sortBy === "velocity") return b.velocity - a.velocity;
-            if (sortBy === "diameter") return b.diameterMax - a.diameterMax;
-            return 0;
-        });
+        if (sortBy === "date") {
+            result.sort((a, b) => a.date.localeCompare(b.date));
+            
+            const grouped = result.reduce((acc: any, asteroid) => {
+                const date = asteroid.date;
+                if (!acc[date]) {
+                    acc[date] = [];
+                }
+                acc[date].push(asteroid);
+                return acc;
+            }, {});
+            
+            return {
+                sections: Object.entries(grouped).map(([date, data]) => ({
+                    title: date,
+                    data: data as any[],
+                })),
+                isGrouped: true,
+            };
+        }
         
-        return result;
+        if (sortBy === "distance") {
+            result.sort((a, b) => a.distance - b.distance);
+        } else if (sortBy === "velocity") {
+            result.sort((a, b) => b.velocity - a.velocity);
+        } else if (sortBy === "diameter") {
+            result.sort((a, b) => b.diameterMax - a.diameterMax);
+        }
+        
+        return {
+            sections: [{ title: "", data: result }],
+            isGrouped: false,
+        };
     }, [asteroids, onlyHazardous, sortBy]);
 
     if (loading) {
@@ -47,8 +73,8 @@ export default function Home() {
     return (
         <View style={styles.container}>
             <Header />
-            <FlatList
-                data={filteredAndSorted}
+            <SectionList
+                sections={sections}
                 keyExtractor={(item) => item.id}
                 ListHeaderComponent={
                     <FilterSection
@@ -57,6 +83,13 @@ export default function Home() {
                         sortBy={sortBy}
                         setSortBy={setSortBy}
                     />
+                }
+                renderSectionHeader={({ section: { title } }) => 
+                    isGrouped && title ? (
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>{formatDateLabel(title)}</Text>
+                        </View>
+                    ) : null
                 }
                 renderItem={({ item }) => (
                     <View style={styles.cardWrapper}>
@@ -89,5 +122,15 @@ const styles = StyleSheet.create({
     cardWrapper: {
         paddingHorizontal: 16,
         paddingTop: 4,
+    },
+    sectionHeader: {
+        backgroundColor: "#020618",
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#3b82f6",
     },
 });
